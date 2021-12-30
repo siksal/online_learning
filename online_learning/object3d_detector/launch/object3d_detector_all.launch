@@ -1,0 +1,32 @@
+<launch>
+
+  <!-- ROSBAG play -->
+  <arg name="bag" value="<MODIFY_THE_DIRECTORY_ACCORDINGLY>/OS-1-32-122125000010-1024x10-House1.rosbag"/>
+  <param name="use_sim_time" value="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" args="--clock $(arg bag)" required="true"/>
+  
+  <!-- ROS Visualization -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find object3d_detector)/launch/object3d_detector.rviz"/>
+  <node pkg="ouster_ros" name="img_node" type="img_node" output="screen" required="true">
+    <remap from="~/os_config" to="/os_node/os_config"/>
+    <remap from="~/points" to="/os_cloud_node/points"/>
+  </node>
+ 
+  <!-- Robot 3D Object Detector -->
+  <node pkg="object3d_detector" type="object3d_detector" name="object3d_detector" output="screen" respawn="false">
+    <param name="model_file_name" type="string" value="$(find object3d_detector)/libsvm/pedestrian.model"/>
+    <param name="range_file_name" type="string" value="$(find object3d_detector)/libsvm/pedestrian.range"/>
+  </node>
+
+  <!-- NBellotto's Bayes People Tracker -->
+  <!--
+  <rosparam command="load" file="$(find object3d_detector)/config/object3d_detector.yaml"/>
+  <node pkg="bayes_people_tracker" type="bayes_people_tracker" name="bayes_people_tracker" output="screen" respawn="false">
+    <param name="base_link" type="string" value="os_sensor"/>
+    <param name="target_frame" type="string" value="os_sensor"/>
+  </node>
+  -->
+
+  <!-- GPIO -->
+  
+</launch>
